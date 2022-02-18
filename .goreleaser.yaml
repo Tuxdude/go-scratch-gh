@@ -1,12 +1,29 @@
 before:
   hooks:
+    # Run all pre-checks before goreleaser cuts a release.
     - make goreleaser_verify
 builds:
   - env:
+      - GO111MODULE=on
+      # Disable CGO (i.e. binary will be statically linked).
       - CGO_ENABLED=0
+
+    flags:
+      # Trim the path for reproducible builds.
+      - -trimpath
     ldflags:
-      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+      # Strip debugging symbols.
+      - -s -w
+      # Include version and commit information (uses commit date for
+      # reproducible builds).
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.CommitDate}}
+    # Use the commit timestamp as the binary's modified timestamp.
     mod_timestamp: '{{ .CommitTimestamp }}'
+    # Set to true only for library projects.
+    skip: false
+    # Target platform and architectures.
     targets:
       - linux_amd64
       - linux_386
@@ -21,9 +38,11 @@ builds:
       - windows_arm_6
       - windows_arm_7
 archives:
+  # Package in tar.xz format except for Windows (uses .zip instead).
   - format: tar.xz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}"
     replacements:
-      darwin: Darwin
+      darwin: macOS
       linux: Linux
       windows: Windows
       386: i386
@@ -31,11 +50,27 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+universal_binaries:
+  # Build universal fat binaries for macOS which packages the binaries
+  # for all architectures under macOS into a single archive, and
+  # replaces the granular archives.
+  - replace: true
 checksum:
+  # Checksum configuration.
   name_template: 'checksums.txt'
+  algorithm: sha256
+gomod:
+  # Load dependencies using proxy.golang.org to create a verifiable build.
+  proxy: true
+  env:
+    - GOPROXY=https://proxy.golang.org,direct
+    - GOSUMDB=sum.golang.org
+  gobinary: go
 snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  # Custom naming for snapshot builds.
+  name_template: "{{ incpatch .Version }}-dev-{{ .ShortCommit }}"
 changelog:
+  use: github
   sort: asc
   filters:
     exclude:
@@ -46,3 +81,11 @@ release:
   discussion_category_name: Releases
   prerelease: auto
   mode: keep-existing
+  header: |
+    ## {{ .TagSubject }}
+    {{ .TagContents }}
+  footer: |
+    ## Thanks!
+
+    Those include all the changes in {{ .Tag }}!
+  name_template: "{{.ProjectName}}-v{{.Version}}"

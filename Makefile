@@ -29,28 +29,31 @@ endif
 ECHO := echo -e
 
 # go and related binaries.
-GO_CMD          := go
-GO_IMPORTS_CMD  := goimports
-GO_FMT_CMD      := gofmt
-GO_LINT_CMD     := golint
-GO_CI_LINT_CMD  := golangci-lint
+GO_CMD            := go
+GO_IMPORTS_CMD    := goimports
+GO_FMT_CMD        := gofmt
+GO_LINT_CMD       := golint
+GO_CI_LINT_CMD    := golangci-lint
+GO_RELEASER       := goreleaser
 
 # Commands invoked from rules.
-GOBUILD         := $(GO_CMD) build
-GOSTRIPPEDBUILD := CGO_ENABLED=0 GOOS=linux $(GO_CMD) build -a -ldflags "-s -w" -installsuffix cgo
-GOCLEAN         := $(GO_CMD) clean
-GOGENERATE      := $(GO_CMD) generate
-GOGET           := $(GO_CMD) get -u
-GOLIST          := $(GO_CMD) list
-GOMOD           := $(GO_CMD) mod
-GOTEST          := $(GO_CMD) test -v
-GOCOVERAGE      := $(GO_CMD) test -v -race -coverprofile coverage.out -covermode atomic
-GOVET           := $(GO_CMD) vet
-GOIMPORTS       := $(GO_IMPORTS_CMD) -w
-GOFMT           := $(GO_FMT_CMD) -s -w
-GOLINT          := $(GO_LINT_CMD) -set_exit_status -min_confidence 0.200001
-GOLINTAGG       := $(GO_LINT_CMD) -set_exit_status -min_confidence 0
-GOLANGCILINT    := $(GO_CI_LINT_CMD) run
+GOBUILD           := $(GO_CMD) build
+GOSTRIPPEDBUILD   := CGO_ENABLED=0 GOOS=linux $(GO_CMD) build -a -ldflags "-s -w" -installsuffix cgo
+GOCLEAN           := $(GO_CMD) clean
+GOGENERATE        := $(GO_CMD) generate
+GOGET             := $(GO_CMD) get -u
+GOLIST            := $(GO_CMD) list
+GOMOD             := $(GO_CMD) mod
+GOTEST            := $(GO_CMD) test -v
+GOCOVERAGE        := $(GO_CMD) test -v -race -coverprofile coverage.out -covermode atomic
+GOVET             := $(GO_CMD) vet
+GOIMPORTS         := $(GO_IMPORTS_CMD) -w
+GOFMT             := $(GO_FMT_CMD) -s -w
+GOLINT            := $(GO_LINT_CMD) -set_exit_status -min_confidence 0.200001
+GOLINTAGG         := $(GO_LINT_CMD) -set_exit_status -min_confidence 0
+GOLANGCILINT      := $(GO_CI_LINT_CMD) run
+GORELEASERRELEASE := $(GO_RELEASER) release
+GORELEASERCHECK   := $(GO_RELEASER) check
 
 # Alternative for running golangci-lint, using docker instead:
 # docker run \
@@ -123,6 +126,12 @@ test: tidy
 
 coverage: tidy
 	$(call ExecWithMsg,Testing with Coverage generation,$(GOCOVERAGE) ./...)
+
+goreleaser_check:
+	$(call ExecWithMsg,GoReleaser Checking config,$(GORELEASERCHECK))
+
+goreleaser_local_release:
+	$(call ExecWithMsg,GoReleaser Building Local Release,$(GORELEASERRELEASE) --snapshot --rm-dist)
 
 .PHONY: all clean fiximports fmt generate lint lintagg vet tidy deps_update
 .PHONY: build buildstripped test coverage

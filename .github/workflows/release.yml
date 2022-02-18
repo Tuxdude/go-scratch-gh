@@ -3,20 +3,13 @@ name: Release
 
 on:
   push:
-    branches:
-      - master
     tags:
       - v*
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches:
-      - master
   schedule:
     - cron: '00 03 * * *'
 
 permissions:
   contents: write
-  packages: write
 
 jobs:
   build:

@@ -41,3 +41,8 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+release:
+  draft: true
+  discussion_category_name: Releases
+  prerelease: auto
+  mode: keep-existing

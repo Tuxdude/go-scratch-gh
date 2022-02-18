@@ -54,6 +54,8 @@ GOLINTAGG         := $(GO_LINT_CMD) -set_exit_status -min_confidence 0
 GOLANGCILINT      := $(GO_CI_LINT_CMD) run
 GORELEASERRELEASE := $(GO_RELEASER) release
 GORELEASERCHECK   := $(GO_RELEASER) check
+INSTALL_GORELEASER_HOOK_PREREQS   := $(GO_CMD) install \
+    github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 # Alternative for running golangci-lint, using docker instead:
 # docker run \
@@ -88,8 +90,20 @@ endif
 
 all: fiximports generate fmt lint vet build test
 
+build: tidy
+	$(call ExecWithMsg,Building,$(GOBUILD) ./...)
+
+buildstripped: tidy
+	$(call ExecWithMsg,Building Stripped,$(GOSTRIPPEDBUILD) ./...)
+
 clean:
 	$(call ExecWithMsg,Cleaning,$(GOCLEAN) ./...)
+
+coverage: tidy
+	$(call ExecWithMsg,Testing with Coverage generation,$(GOCOVERAGE) ./...)
+
+deps_update:
+	$(call ExecWithMsg,Updating to the latest version of dependencies for \"$(DEP_PKGS_TEXT)\",$(GOGET) $(DEP_PKGS))
 
 fiximports:
 	$(call ExecWithMsg,Fixing imports,$(GOIMPORTS) .)
@@ -100,38 +114,36 @@ fmt:
 generate:
 	$(call ExecWithMsg,Generating,$(GOCLEAN) ./...)
 
-lint: tidy
-	$(call ExecWithMsg,Linting,$(GOLINT) . && $(GOLANGCILINT))
-
-lintagg: tidy
-	$(call ExecWithMsg,Aggressive Linting,$(GOLINTAGG) . && $(GOLANGCILINT))
-
-vet: tidy
-	$(call ExecWithMsg,Vetting,$(GOVET) ./...)
-
-tidy:
-	$(call ExecWithMsg,Tidying module,$(GOMOD) tidy)
-
-deps_update:
-	$(call ExecWithMsg,Updating to the latest version of dependencies for \"$(DEP_PKGS_TEXT)\",$(GOGET) $(DEP_PKGS))
-
-build: tidy
-	$(call ExecWithMsg,Building,$(GOBUILD) ./...)
-
-buildstripped: tidy
-	$(call ExecWithMsg,Building Stripped,$(GOSTRIPPEDBUILD) ./...)
-
-test: tidy
-	$(call ExecWithMsg,Testing,$(GOTEST) ./...)
-
-coverage: tidy
-	$(call ExecWithMsg,Testing with Coverage generation,$(GOCOVERAGE) ./...)
-
-goreleaser_check:
+goreleaser_check_config:
 	$(call ExecWithMsg,GoReleaser Checking config,$(GORELEASERCHECK))
 
 goreleaser_local_release:
 	$(call ExecWithMsg,GoReleaser Building Local Release,$(GORELEASERRELEASE) --snapshot --rm-dist)
 
-.PHONY: all clean fiximports fmt generate lint lintagg vet tidy deps_update
-.PHONY: build buildstripped test coverage
+goreleaser_verify_install_prereqs:
+	$(call ExecWithMsg,GoReleaser Pre-Release Installing Prereqs,$(INSTALL_GORELEASER_HOOK_PREREQS))
+
+goreleaser_verify: goreleaser_verify_install_prereqs generate fmt lint_golangci_lint_only vet build test
+
+test: tidy
+	$(call ExecWithMsg,Testing,$(GOTEST) ./...)
+
+tidy:
+	$(call ExecWithMsg,Tidying module,$(GOMOD) tidy)
+
+lint: tidy
+	$(call ExecWithMsg,Linting,$(GOLINT) . && $(GOLANGCILINT))
+
+lint_agg: tidy
+	$(call ExecWithMsg,Aggressive Linting,$(GOLINTAGG) . && $(GOLANGCILINT))
+
+lint_golangci_lint_only: tidy
+	$(call ExecWithMsg,Linting (golangci-lint only),$(GOLANGCILINT))
+
+vet: tidy
+	$(call ExecWithMsg,Vetting,$(GOVET) ./...)
+
+.PHONY: all build buildstripped clean coverage deps_update fiximports
+.PHONY: fmt generate goreleaser_check_config goreleaser_local_release
+.PHONY: goreleaser_verify_install_prereqs goreleaser_verify test tidy lint
+.PHONY: lint_agg lint_golangci_lint_only vet

@@ -60,6 +60,17 @@ checksum:
   # Checksum configuration.
   name_template: 'checksums.txt'
   algorithm: sha256
+signs:
+  - signature: "${artifact}.sig"
+    cmd: gpg
+    args:
+      - "-u"
+      - "8D458AC08D2CE9CE"
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
+    artifacts: all
 gomod:
   # Load dependencies using proxy.golang.org to create a verifiable build.
   proxy: true

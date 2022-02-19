@@ -56,6 +56,10 @@ universal_binaries:
   # into a single archive, and delete the other single architecture macOS
   # archives.
   - replace: true
+source:
+  enabled: true
+  name_template: "{{ .ProjectName }}-v{{ .Version }}-src"
+  format: tar.xz
 checksum:
   # Checksum configuration.
   name_template: 'checksums.txt'

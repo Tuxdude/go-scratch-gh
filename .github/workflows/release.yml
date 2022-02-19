@@ -23,6 +23,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      # We need to do this because of:
+      # https://github.com/actions/checkout/issues/290 and its side-effects
+      # as https://github.com/goreleaser/goreleaser/issues/2919
+      - name: Fetch full annotated tags metadata
+        run: git fetch --force --tags
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:

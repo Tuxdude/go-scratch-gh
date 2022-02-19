@@ -83,7 +83,7 @@ release:
   prerelease: auto
   mode: keep-existing
   header: |
-    ### Released {{ time "Mon Jan 2 03:04 PM 2006 MST" }}
+    ### Released {{ time "Mon, Jan 2 2006 03:04 PM UTC-0700" }}
     {{ .TagContents }}
   footer: |
     ### Thanks!

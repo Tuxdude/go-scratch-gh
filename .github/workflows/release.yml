@@ -34,10 +34,6 @@ jobs:
         with:
           go-version: 1.17
 
-      - name: Test tag information
-        run: |
-          for tag in $(git tag -l); do echo -e "\n\n\nTag = $tag\n"; git tag -l --format='%(contents)' $tag; done
-
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:

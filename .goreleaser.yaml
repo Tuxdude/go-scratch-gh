@@ -82,10 +82,9 @@ release:
   prerelease: auto
   mode: keep-existing
   header: |
-    ## {{ .TagSubject }}
+    ## Released on {{ .Date }}
     {{ .TagContents }}
   footer: |
     ## Thanks!
-
     Those include all the changes in {{ .Tag }}!
-  name_template: "{{.ProjectName}}-v{{.Version}}"
+  name_template: "{{.ProjectName}} v{{.Version}}"

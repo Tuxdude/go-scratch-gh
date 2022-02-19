@@ -83,9 +83,9 @@ release:
   prerelease: auto
   mode: keep-existing
   header: |
-    ### Released {{ time "Mon, Jan 2 2006 03:04 PM UTC-0700" }}
+    ## Released {{ time "Mon, Jan 2 2006 03:04 PM UTC-0700" }}
     {{ .TagContents }}
   footer: |
-    ### Thanks!
+    ## Thanks!
     Those include all the new changes in the {{ .Tag }} release!
   name_template: "{{.ProjectName}} v{{.Version}}"

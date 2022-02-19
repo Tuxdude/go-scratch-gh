@@ -60,13 +60,13 @@ checksum:
   # Checksum configuration.
   name_template: 'checksums.txt'
   algorithm: sha256
-gomod:
-  # Load dependencies using proxy.golang.org to create a verifiable build.
-  proxy: true
-  env:
-    - GOPROXY=https://proxy.golang.org,direct
-    - GOSUMDB=sum.golang.org
-  gobinary: go
+  # gomod:
+  #   # Load dependencies using proxy.golang.org to create a verifiable build.
+  #   proxy: true
+  #   env:
+  #     - GOPROXY=https://proxy.golang.org,direct
+  #     - GOSUMDB=sum.golang.org
+  #   gobinary: go
 snapshot:
   # Custom naming for snapshot builds.
   name_template: "{{ incpatch .Version }}-dev-{{ .ShortCommit }}"

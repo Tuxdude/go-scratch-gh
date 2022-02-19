@@ -51,9 +51,10 @@ archives:
       - goos: windows
         format: zip
 universal_binaries:
-  # Build universal fat binaries for macOS which packages the binaries
-  # for all architectures under macOS into a single archive, and
-  # replaces the granular archives.
+  # Build a universal fat binary for macOS (i.e. build a single binary
+  # which contains the binaries for all architectures under macOS) packaged
+  # into a single archive, and delete the other single architecture macOS
+  # archives.
   - replace: true
 checksum:
   # Checksum configuration.
@@ -82,9 +83,9 @@ release:
   prerelease: auto
   mode: keep-existing
   header: |
-    ## Released on {{ .Date }}
+    ## Released {{ .Date }}
     {{ .TagContents }}
   footer: |
     ## Thanks!
-    Those include all the changes in {{ .Tag }}!
+    Those include all the new changes in the {{ .Tag }} release!
   name_template: "{{.ProjectName}} v{{.Version}}"

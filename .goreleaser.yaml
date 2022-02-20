@@ -94,7 +94,7 @@ changelog:
       - '^test:'
 release:
   draft: false
-  discussion_category_name: Releases
+  discussion_category_name: Announcements
   prerelease: auto
   mode: keep-existing
   header: |

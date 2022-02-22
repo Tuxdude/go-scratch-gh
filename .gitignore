@@ -1,3 +1,4 @@
-go-scratch-gh
-
+.makesystem
+coverage.out
 dist/
+go-scratch-gh

@@ -187,3 +187,7 @@ tidy:
 vet: tidy
 	$(call ExecWithMsg,Vetting,$(GOVET) ./...)
 .PHONY: vet
+
+github_dump_build_os_matrix:
+	@echo "::set-output name=os-matrix::[\"ubuntu-latest\", \"macos-latest\", \"windows-latest\"]"
+.PHONY: github_dump_build_os_matrix

@@ -35,12 +35,7 @@ jobs:
 
       - name: Dump makesystem version
         id: dump-makesystem-version
-        run: |
-          echo "::set-output name=version::$(cat .bootstrap/VERSION)"
-
-      - name: Test Dump makesystem version
-        run: |
-          echo "v${{ steps.dump-makesystem-version.outputs.version }}"
+        run: make github_dump_makesystem_version
 
       - uses: tibdex/github-app-token@v1
         id: generate-token

@@ -5,12 +5,13 @@ on:
   push:
     tags:
       - v*
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build:
+  release:
     name: Release
     runs-on: ubuntu-latest
 
@@ -28,6 +29,9 @@ jobs:
       # as https://github.com/goreleaser/goreleaser/issues/2919
       - name: Fetch full annotated tags metadata
         run: git fetch --force --tags
+
+      - name: Set up makesystem
+        run: make makesystem_install
 
       - name: Set up Go
         uses: actions/setup-go@v2

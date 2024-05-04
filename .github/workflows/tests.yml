@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -56,7 +56,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -67,9 +67,9 @@ jobs:
         run: make makesystem_install
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.18
+          go-version: 1.22
 
       - name: Run Tests with Coverage generation (Linux/ OSX)
         if: ${{ matrix.os != 'windows-latest' }}
@@ -80,14 +80,3 @@ jobs:
         # generation command fails on Windows.
         if: ${{ matrix.os == 'windows-latest' }}
         run: go test -v ./...
-
-      - name: Upload Test coverage to Codecov (Linux / OSX)
-        uses: codecov/codecov-action@v3
-        # Do not upload coverage on Windows, as there
-        # will be no coverage data generated.
-        if: ${{ matrix.os != 'windows-latest' }}
-        with:
-          files: coverage.out
-          fail_ci_if_error: true
-          flags: unittests
-          verbose: true

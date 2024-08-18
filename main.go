@@ -10,6 +10,7 @@ func run() int {
 	fmt.Println("Another no-op output")
 	fmt.Println("Adding a third line of output")
 	fmt.Println("Adding a fourth line of output")
+	fmt.Println("Adding a fifth line of output")
 	return 0
 }
 
